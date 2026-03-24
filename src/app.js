@@ -8,12 +8,20 @@ import authFunction from "./routes/auth.route.js";
 import cors from "@fastify/cors"
 
 export const buildApp = async () => {
-  const fastify = Fastify({ logger: true });
+  const fastify = Fastify();
   await fastify.register(cors, {
     origin: "*",     // allow all origins
     methods: ["GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   });
+  fastify.addHook("onRequest", async(request,reply)=>{
+    fastify.log.info({
+      method:request.method,
+      url:request.url,
+      params:request.params,
+      query:request.query
+    },"Incoming Request")
+  })
   // Connect Database
   await connectDB();
 
